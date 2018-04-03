@@ -6,15 +6,19 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#client_credentials_flow
  */
-
+require('dotenv').config()
 var request = require('request'); // "Request" library
 
-var client_id = 'CLIENT_ID'; // Your client id
-var client_secret = 'CLIENT_SECRET'; // Your secret
 
+var client_id = process.env.CLIENT_ID; // Your client id
+var client_secret = process.env.CLIENT_SECRET; // Your secret
+
+console.log(client_secret)
 // your application requests authorization
 var authOptions = {
   url: 'https://accounts.spotify.com/api/token',
+  scope: 'user-read-recently-played',
+
   headers: {
     'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
   },
@@ -30,13 +34,16 @@ request.post(authOptions, function(error, response, body) {
     // use the access token to access the Spotify Web API
     var token = body.access_token;
     var options = {
-      url: 'https://api.spotify.com/v1/users/jmperezperez',
+      url: 'https://api.spotify.com/v1/me/player/recently-played',
       headers: {
         'Authorization': 'Bearer ' + token
       },
       json: true
     };
     request.get(options, function(error, response, body) {
+//       console.log('error',error);
+// console.log('response', response);
+
       console.log(body);
     });
   }
