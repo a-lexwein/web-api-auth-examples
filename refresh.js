@@ -1,3 +1,16 @@
+const { Client } = require('pg');
+const payloadToSongArray = require('./payloadToSongArray.js');
+
+const client = new Client({
+  host: 'spotty.cgszne64zlop.us-west-2.rds.amazonaws.com',
+  database: 'spotty',
+  port: 5432,
+  user: 'alex',
+});
+
+client.connect();
+
+
 // Uses some copy-pasted code from Spotify's web-api-auth-examples repo.
 
 require('dotenv').config(); // to uses process.env vars defined in .env
@@ -44,12 +57,33 @@ getHistory = function(access_token) {
     json: true
   };
   request.get(options, function(error, response, body) {
-    var params = {
-      TableName: 'history',
-      Item: {timestamp: String(Date.now()), body: body},
-    }
-    docClient.put(params, console.log)
+    // var params = {
+    //   TableName: 'history',
+    //   Item: {timestamp: String(Date.now()), body: body},
+    // }
+    //docClient.put(params, console.log)
+
+
+    // NOTE Postgres Stuff
+    // client.query(`
+    //   INSERT INTO history(dump)
+    //   VALUES(${JSON.stringify(body)});
+    // `, (x,y) => {
+    //   console.log('x', x);
+    //   console.log('y', y);
+    //   client.end()
+    // });
+// console.log(JSON.stringify(payloadToSongArray(body)))
+console.log(JSON.stringify(payloadToSongArray(body).tracks[1]))
+
+
+client.end();
   });
 }
 
 refreshAnd(refresh_token, getHistory)
+
+
+// item => {
+//   return {}
+// }
