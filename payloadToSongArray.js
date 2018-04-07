@@ -17,6 +17,10 @@ const payloadToSongArray = (body) => {
 
   tracks = tracks.map(x => _.omit(x, 'artists'));
 
+  tracks.forEach(x => {
+    x.name =  x.name.split("'").join("''");
+  })
+
   return {tracks, artists};
 
 }

@@ -63,27 +63,36 @@ getHistory = function(access_token) {
     // }
     //docClient.put(params, console.log)
 
+    let songs = payloadToSongArray(body)
+    let tracks = songs.tracks
 
+    const trackToInsertLine = ({id, name, duration_ms, played_at}) => `('${id}', '${name}', ${duration_ms}, '${played_at}')`
+    tracks.map(trackToInsertLine).join(',')
+
+    const query = `
+      INSERT INTO HistoryAlex(track_id, track_name, duration_ms, played_at) VALUES
+      ${tracks.map(trackToInsertLine).join(',')};
+    `
+
+    console.log(query)
     // NOTE Postgres Stuff
-    // client.query(`
-    //   INSERT INTO history(dump)
-    //   VALUES(${JSON.stringify(body)});
-    // `, (x,y) => {
-    //   console.log('x', x);
-    //   console.log('y', y);
-    //   client.end()
-    // });
-// console.log(JSON.stringify(payloadToSongArray(body)))
-console.log(JSON.stringify(payloadToSongArray(body).tracks[1]))
-
-
-client.end();
+    client.query(query, (x,y) => {
+      console.log('x', x);
+      console.log('y', y);
+      client.end()
+    });
+// // console.log(JSON.stringify(payloadToSongArray(body)))
+// console.log(JSON.stringify(payloadToSongArray(body).tracks[1]))
+//
+//
+// client.end();
   });
 }
 
 refreshAnd(refresh_token, getHistory)
 
 
-// item => {
-//   return {}
-// }
+
+
+// ['name', 'id', 'artists', 'duration_ms', 'played_at'];
+// artists: name id
